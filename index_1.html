@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ee4d2d">
+    <meta name="description" content="Shopee Affiliate Store - Os melhores produtos com os melhores preços">
+    <title>Shopee Affiliate Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Tela de Login -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-logo">
+            <i class="fas fa-shopping-bag"></i>
+        </div>
+        <h1 class="login-title">Shopee Affiliate Store</h1>
+        <p class="login-subtitle">Os melhores produtos com os melhores preços</p>
+        <button class="google-btn" onclick="loginWithGoogle()">
+            <i class="fab fa-google"></i>
+            <span>Entrar com Google</span>
+        </button>
+        <div style="margin-top: 2rem; color: rgba(255,255,255,0.5); font-size: 0.8rem; text-align: center;">
+            <p>Ao entrar, você concorda com nossos termos de uso</p>
+            <p style="margin-top: 0.5rem;">Primeiro login vira administrador automaticamente</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <span>Shopee Store</span>
+                <span class="admin-badge" id="adminBadge" style="display: none;">Admin</span>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="logout()" title="Sair">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search -->
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Buscar produtos..." id="searchInput" onkeyup="searchProducts()">
+        </div>
+    </div>
+
+    <!-- Produtos -->
+    <div class="products-container">
+        <h2 class="section-title">
+            <i class="fas fa-fire" style="color: var(--primary);"></i>
+            Produtos em Destaque
+        </h2>
+        <div class="products-grid" id="productsGrid">
+            <!-- Produtos serão inseridos aqui via JS -->
+        </div>
+        
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-box-open"></i>
+            <p>Nenhum produto encontrado.</p>
+        </div>
+    </div>
+
+    <!-- Botão Flutuante de Adicionar Produto (FAB) -->
+    <button class="fab" id="addProductFab" onclick="openProductModal()" style="display: none;">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Modal de Produto (Adicionar/Editar) -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeProductModal()">&times;</span>
+            <h2 id="modalTitle">Adicionar Produto</h2>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="input-group">
+                    <label for="productName">Nome do Produto</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="input-group">
+                    <label for="productDescription">Descrição</label>
+                    <textarea id="productDescription" rows="3" required></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="productImage">URL da Imagem</label>
+                    <input type="url" id="productImage" required>
+                </div>
+                <div class="input-group">
+                    <label for="productPrice">Preço</label>
+                    <input type="number" id="productPrice" step="0.01" required>
+                </div>
+                <div class="input-group">
+                    <label for="productOriginalPrice">Preço Original (opcional)</label>
+                    <input type="number" id="productOriginalPrice" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="productRating">Avaliação (1-5)</label>
+                    <input type="number" id="productRating" min="1" max="5" step="0.1" value="5" required>
+                </div>
+                <div class="input-group">
+                    <label for="productLink">Link do Produto (Shopee)</label>
+                    <input type="url" id="productLink" required>
+                </div>
+                <button type="submit" class="buy-btn" id="saveProductBtn">Salvar Produto</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes do Produto -->
+    <div class="modal" id="productDetailModal">
+        <div class="modal-content product-detail-modal-content">
+            <span class="close-button" onclick="closeProductDetailModal()">&times;</span>
+            <img src="" alt="" class="product-detail-image" id="detailImage">
+            <div class="product-detail-info">
+                <h2 id="detailName"></h2>
+                <p class="detail-price" id="detailPrice"></p>
+                <p class="detail-description" id="detailDescription"></p>
+                <div class="product-rating" id="detailRating"></div>
+                <button class="buy-btn" id="buyNowBtn" target="_blank"><i class="fas fa-shopping-cart"></i> Comprar Agora</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
